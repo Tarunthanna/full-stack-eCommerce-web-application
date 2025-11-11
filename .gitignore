@@ -1,0 +1,30 @@
+# General
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
+logs/
+
+# Node/React (frontend)
+frontend/node_modules/
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+frontend/build/
+frontend/dist/
+
+# Java/Spring (backend)
+backend/target/
+backend/.mvn/
+backend/mvnw
+backend/mvnw.cmd
+
+# Secrets and local config
+backend/src/main/resources/application.properties
+
+# Coverage / reports
+coverage/
+*.iml
+
+
