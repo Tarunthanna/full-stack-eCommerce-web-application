@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { cartAPI } from '../services/api';
 import { authService } from '../utils/auth';
+import ProductImage from '../components/ProductImage';
+import LoadingSpinner from '../components/LoadingSpinner';
+
+const D = 'div';
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -16,7 +20,7 @@ const Cart = () => {
       return;
     }
     fetchCart();
-  }, [user]);
+  }, [user, navigate]);
 
   const fetchCart = async () => {
     try {
@@ -47,73 +51,67 @@ const Cart = () => {
     }
   };
 
-  if (loading) return <div className="container">Loading...</div>;
-  if (error) return <div className="container error">{error}</div>;
+  if (loading) return <LoadingSpinner label="Loading your cart..." />;
+  if (error) {
+    return (
+      <D className="container">
+        <D className="alert alert-error">{error}</D>
+      </D>
+    );
+  }
 
   return (
-    <div className="container">
-      <h1>Shopping Cart</h1>
+    <D className="container">
+      <header className="page-header">
+        <h1>Your cart</h1>
+        <p>Review items before checkout</p>
+      </header>
+
       {cart.items.length === 0 ? (
-        <div className="card">
-          <p>Your cart is empty</p>
-          <Link to="/products" className="btn btn-primary">
-            Continue Shopping
-          </Link>
-        </div>
+        <D className="card cart-empty">
+          <p>Your cart is empty — explore our collection and find something you love.</p>
+          <Link to="/products" className="btn btn-primary">Continue shopping</Link>
+        </D>
       ) : (
-        <>
-          <table>
-            <thead>
-              <tr>
-                <th>Product</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Total</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {cart.items.map(item => (
-                <tr key={item.id}>
-                  <td>
-                    <Link to={`/products/${item.product.id}`}>
-                      {item.product.name}
-                    </Link>
-                  </td>
-                  <td>${item.product.price}</td>
-                  <td>
-                    <input
-                      type="number"
-                      min="1"
-                      value={item.quantity}
-                      onChange={(e) => handleUpdateQuantity(item.id, parseInt(e.target.value))}
-                      style={{ width: '60px', padding: '5px' }}
-                    />
-                  </td>
-                  <td>${(item.product.price * item.quantity).toFixed(2)}</td>
-                  <td>
-                    <button
-                      onClick={() => handleRemove(item.id)}
-                      className="btn btn-danger"
-                    >
-                      Remove
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <div className="card" style={{ textAlign: 'right' }}>
-            <h2>Total: ${cart.totalPrice.toFixed(2)}</h2>
-            <Link to="/checkout" className="btn btn-success" style={{ marginTop: '10px' }}>
-              Proceed to Checkout
+        <D className="cart-layout">
+          <D className="card">
+            {cart.items.map((item) => (
+              <D key={item.id} className="cart-item">
+                <ProductImage product={item.product} size="thumb" />
+                <D className="cart-item__info">
+                  <Link to={`/products/${item.product.id}`}>{item.product.name}</Link>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>
+                    ${Number(item.product.price).toFixed(2)} each
+                  </p>
+                </D>
+                <input
+                  type="number"
+                  min="1"
+                  value={item.quantity}
+                  onChange={(e) => handleUpdateQuantity(item.id, parseInt(e.target.value, 10) || 1)}
+                  style={{ width: '64px', padding: '8px', borderRadius: '8px', border: '1px solid var(--border)' }}
+                  aria-label="Quantity"
+                />
+                <strong>${(item.product.price * item.quantity).toFixed(2)}</strong>
+                <button type="button" onClick={() => handleRemove(item.id)} className="btn btn-danger btn-sm">
+                  Remove
+                </button>
+              </D>
+            ))}
+          </D>
+          <D className="card cart-summary">
+            <h2>Order total</h2>
+            <p className="product-detail__price" style={{ marginBottom: '20px' }}>
+              ${cart.totalPrice.toFixed(2)}
+            </p>
+            <Link to="/checkout" className="btn btn-success btn-block">
+              Proceed to checkout
             </Link>
-          </div>
-        </>
+          </D>
+        </D>
       )}
-    </div>
+    </D>
   );
 };
 
 export default Cart;
-

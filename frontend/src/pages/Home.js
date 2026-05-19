@@ -1,73 +1,80 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { productAPI } from '../services/api';
+import ProductCard from '../components/ProductCard';
+import LoadingSpinner from '../components/LoadingSpinner';
+import { HERO_IMAGE, CATEGORY_IMAGES } from '../utils/productImages';
+
+const Box = 'div';
+const CATEGORIES = ['Electronics', 'Clothing', 'Accessories', 'Sports', 'Footwear'];
 
 const Home = () => {
-  const featuredProducts = [
-    {
-      name: 'Dell XPS Laptop',
-      image: '/images/laptop-dell-xps.jpg',
-      price: '$1299.99',
-      category: 'Electronics'
-    },
-    {
-      name: 'Apple iPhone (Purple)',
-      image: '/images/smartphone-purple.jpg',
-      price: '$999.99',
-      category: 'Electronics'
-    },
-    {
-      name: 'Luxury Wristwatch',
-      image: '/images/watch-luxury.jpg',
-      price: '$2499.99',
-      category: 'Accessories'
-    },
-    {
-      name: 'Mountain Bike',
-      image: '/images/bike-mountain.jpg',
-      price: '$799.99',
-      category: 'Sports'
-    }
-  ];
+  const [featured, setFeatured] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    productAPI.getAll()
+      .then((res) => setFeatured(res.data.slice(0, 4)))
+      .catch(() => setFeatured([]))
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
-    <div className="container">
-      <div className="card" style={{ textAlign: 'center', padding: '50px', marginBottom: '40px' }}>
-        <h1>Welcome to ECommerce Store</h1>
-        <p style={{ fontSize: '18px', marginTop: '20px', marginBottom: '30px' }}>
-          Discover amazing products at great prices
-        </p>
-        <Link to="/products" className="btn btn-primary">
-          Browse Products
-        </Link>
-      </div>
+    <>
+      <section className="hero" style={{ backgroundImage: `url(${HERO_IMAGE})` }}>
+        <Box className="hero__content">
+          <span className="hero__eyebrow">New season collection</span>
+          <h1>Style, tech & essentials — all in one place</h1>
+          <p>Discover curated products with fast checkout and a seamless shopping experience.</p>
+          <Box className="hero__actions">
+            <Link to="/products" className="btn btn-primary">Shop now</Link>
+            <Link to="/register" className="btn btn-outline">Create account</Link>
+          </Box>
+        </Box>
+      </section>
 
-      <div style={{ marginTop: '40px' }}>
-        <h2 style={{ textAlign: 'center', marginBottom: '30px' }}>Featured Products</h2>
-        <div className="grid">
-          {featuredProducts.map((product, index) => (
-            <div key={index} className="product-card">
-              <img
-                src={product.image}
-                alt={product.name}
-                onError={(e) => {
-                  e.target.src = 'https://via.placeholder.com/300';
-                }}
-              />
-              <div className="product-card-body">
-                <h3>{product.name}</h3>
-                <p style={{ color: '#666', marginBottom: '10px' }}>{product.category}</p>
-                <div className="product-price">{product.price}</div>
-                <Link to="/products" className="btn btn-primary">
-                  View All Products
-                </Link>
-              </div>
-            </div>
+      <Box className="container">
+        <Box className="category-strip">
+          {CATEGORIES.map((cat) => (
+            <Link
+              key={cat}
+              to={`/products?category=${encodeURIComponent(cat)}`}
+              className="category-pill"
+              style={{
+                backgroundImage: `linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url(${CATEGORY_IMAGES[cat] || CATEGORY_IMAGES.Electronics})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                color: 'white',
+                border: 'none',
+              }}
+            >
+              {cat}
+            </Link>
           ))}
-        </div>
-      </div>
-    </div>
+        </Box>
+
+        <Box className="section-title">
+          <h2>Featured products</h2>
+          <p>Hand-picked favorites from our catalog</p>
+        </Box>
+
+        {loading ? (
+          <LoadingSpinner label="Loading featured products..." />
+        ) : featured.length > 0 ? (
+          <Box className="grid">
+            {featured.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </Box>
+        ) : (
+          <Box className="card cart-empty">
+            <p>No products yet. Browse the shop or ask an admin to add inventory.</p>
+            <Link to="/products" className="btn btn-primary">View shop</Link>
+          </Box>
+        )}
+      </Box>
+    </>
   );
 };
 
 export default Home;
-

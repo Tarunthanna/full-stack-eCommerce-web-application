@@ -114,24 +114,25 @@ const AdminDashboard = () => {
       <h1>Admin Dashboard</h1>
       {error && <div className="error">{error}</div>}
       
-      <div style={{ marginBottom: '20px' }}>
+      <div className="tabs">
         <button
+          type="button"
           onClick={() => setActiveTab('products')}
-          className={`btn ${activeTab === 'products' ? 'btn-primary' : ''}`}
-          style={{ marginRight: '10px' }}
+          className={`tab ${activeTab === 'products' ? 'active' : ''}`}
         >
           Products
         </button>
         <button
+          type="button"
           onClick={() => setActiveTab('users')}
-          className={`btn ${activeTab === 'users' ? 'btn-primary' : ''}`}
-          style={{ marginRight: '10px' }}
+          className={`tab ${activeTab === 'users' ? 'active' : ''}`}
         >
           Users
         </button>
         <button
+          type="button"
           onClick={() => setActiveTab('orders')}
-          className={`btn ${activeTab === 'orders' ? 'btn-primary' : ''}`}
+          className={`tab ${activeTab === 'orders' ? 'active' : ''}`}
         >
           Orders
         </button>

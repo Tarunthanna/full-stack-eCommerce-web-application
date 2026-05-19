@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { productAPI, cartAPI } from '../services/api';
 import { authService } from '../utils/auth';
+import ProductImage from '../components/ProductImage';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -36,50 +38,45 @@ const ProductDetails = () => {
 
     try {
       await cartAPI.addToCart(user.id, product.id, quantity);
-      setMessage('Product added to cart!');
+      setMessage('Added to cart!');
       setTimeout(() => setMessage(''), 3000);
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to add to cart');
     }
   };
 
-  if (loading) return <div className="container">Loading...</div>;
-  if (error || !product) return <div className="container error">{error || 'Product not found'}</div>;
+  if (loading) return <LoadingSpinner label="Loading product..." />;
+  if (error || !product) {
+    return (
+      <div className="container">
+        <div className="alert alert-error">{error || 'Product not found'}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="container">
-      <div className="card" style={{ display: 'flex', gap: '30px' }}>
-        <div style={{ flex: '1' }}>
-          <img
-            src={product.imageUrl || 'https://via.placeholder.com/500'}
-            alt={product.name}
-            style={{ width: '100%', borderRadius: '8px' }}
-            onError={(e) => {
-              e.target.src = 'https://via.placeholder.com/500';
-            }}
-          />
-        </div>
-        <div style={{ flex: '1' }}>
+      <div className="card product-detail">
+        <ProductImage product={product} size="detail" />
+        <div className="product-detail__info">
+          <span className="product-detail__meta">{product.category}</span>
           <h1>{product.name}</h1>
-          <p style={{ fontSize: '24px', color: '#007bff', margin: '20px 0' }}>
-            ${product.price}
-          </p>
-          <p><strong>Category:</strong> {product.category}</p>
-          <p style={{ marginTop: '20px' }}>{product.description}</p>
-          <div style={{ marginTop: '30px' }}>
-            <label>Quantity: </label>
+          <p className="product-detail__price">${Number(product.price).toFixed(2)}</p>
+          <p className="product-detail__desc">{product.description}</p>
+          <div className="quantity-row">
+            <label htmlFor="qty">Quantity</label>
             <input
+              id="qty"
               type="number"
               min="1"
               value={quantity}
-              onChange={(e) => setQuantity(parseInt(e.target.value))}
-              style={{ width: '80px', padding: '8px', marginLeft: '10px' }}
+              onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value, 10) || 1))}
             />
           </div>
-          {message && <div className="success">{message}</div>}
-          {error && <div className="error">{error}</div>}
-          <button onClick={handleAddToCart} className="btn btn-primary" style={{ marginTop: '20px' }}>
-            Add to Cart
+          {message && <div className="alert alert-success">{message}</div>}
+          {error && <div className="alert alert-error">{error}</div>}
+          <button type="button" onClick={handleAddToCart} className="btn btn-primary">
+            Add to cart
           </button>
         </div>
       </div>
@@ -88,4 +85,3 @@ const ProductDetails = () => {
 };
 
 export default ProductDetails;
-

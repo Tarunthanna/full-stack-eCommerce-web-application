@@ -1,4 +1,13 @@
 .App {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
+.App > .navbar {
+  flex-shrink: 0;
+}
+
+.App > *:not(.navbar):not(.site-footer) {
+  flex: 1;
+}

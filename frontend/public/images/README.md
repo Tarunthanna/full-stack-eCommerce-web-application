@@ -1,13 +1,16 @@
 # Product Images
 
-Place your product images in this folder with the following filenames:
+The app displays high-quality product photos automatically via Unsplash URLs.
 
-1. `coat-dark-grey.jpg` - Dark grey coat with wide collar
-2. `laptop-dell-xps.jpg` - Dell XPS laptops
-3. `speakers-philips.jpg` - Philips multimedia speakers
-4. `watch-luxury.jpg` - Luxury wristwatch (Ulysse Nardin)
-5. `smartphone-purple.jpg` - Purple smartphones (Apple)
-6. `bike-mountain.jpg` - Mountain bike (AHOY! BIKES)
+## Optional local images
 
-The images will be accessible at: `/images/filename.jpg`
+You can still add files here for offline use. Name them to match the catalog:
 
+- `laptop-dell-xps.jpg`
+- `smartphone-purple.jpg`
+- `speakers-philips.jpg`
+- `watch-luxury.jpg`
+- `coat-dark-grey.jpg`
+- `bike-mountain.jpg`
+
+If a local file is missing, the UI falls back to curated online images.
